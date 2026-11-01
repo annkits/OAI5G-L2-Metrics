@@ -15,6 +15,7 @@
 #include "common/platform_constants.h"
 #include "common/platform_types.h"
 #include "common/utils/threadPool/notified_fifo.h"
+#include "common/utils/l2_counters/l2_counters.h"
 
 /* IF */
 #include "NR_IF_Module.h"
@@ -544,6 +545,12 @@ typedef struct {
   uint16_t ue_id;
 } nr_ue_paging_cfg_t;
 
+/// MAC counters exported by l2_counters; all NULL if the export is disabled
+typedef struct {
+  l2c_counter_t *dl_rx_bytes;
+  l2c_counter_t *ul_tx_bytes;
+} nr_ue_mac_counters_t;
+
 /*!\brief Top level UE MAC structure */
 typedef struct NR_UE_MAC_INST_s {
   module_id_t ue_id;
@@ -645,6 +652,7 @@ typedef struct NR_UE_MAC_INST_s {
   bool sr_fallback_ra_triggered; // SR-fallback RA triggered; block re-trigger until PUCCH SR resource is restored
   pthread_mutex_t if_mutex;
   ue_mac_stats_t stats;
+  nr_ue_mac_counters_t counters;
   notifiedFIFO_t input_nf;
   // set when mac configuration changes during reconf with sync
   // reset when pdcch config is changed after pbch read after reconf

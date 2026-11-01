@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: LicenseRef-CSSL-1.0
+#
+# l2_counters JSON files -> Telegraf -> InfluxDB -> Grafana
+# The softmodems write JSON into ${L2C_DATA_DIR} (default /tmp/l2_counters).
+# Credentials below are for a local lab setup only.
+# Grafana listens on ${GRAFANA_PORT} (default 3001, 3000 is often taken by a host Grafana).
+
+services:
+  influxdb:
+    image: influxdb:2.7.11
+    container_name: l2c-influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: oai-l2-counters
+      DOCKER_INFLUXDB_INIT_ORG: oai
+      DOCKER_INFLUXDB_INIT_BUCKET: l2_counters
+      DOCKER_INFLUXDB_INIT_RETENTION: 7d
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_TOKEN:-oai-l2-counters-token}
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 5s
+      retries: 10
+
+  telegraf:
+    image: telegraf:1.32.3
+    container_name: l2c-telegraf
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    environment:
+      INFLUX_TOKEN: ${INFLUX_TOKEN:-oai-l2-counters-token}
+      TELEGRAF_INTERVAL: ${TELEGRAF_INTERVAL:-1s}
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ${L2C_DATA_DIR:-/tmp/l2_counters}:/data:ro
+
+  grafana:
+    image: grafana/grafana-oss:11.3.1
+    container_name: l2c-grafana
+    depends_on:
+      - influxdb
+    environment:
+      INFLUX_TOKEN: ${INFLUX_TOKEN:-oai-l2-counters-token}
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      # view dashboards without logging in; log in as admin/admin to edit
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/l2_counters.json
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  influxdb-data:
+  grafana-data:
+
+# explicit subnet: does not depend on docker's default address pools
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${L2C_SUBNET:-192.168.72.0/24}

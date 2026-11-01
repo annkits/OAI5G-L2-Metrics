@@ -1154,6 +1154,8 @@ static void generate_dl_mac_pdu(gNB_MAC_INST *mac,
     UE->mac_stats.dl.current_rbs = sched_pdsch->rbSize;
     UE->mac_stats.dl.total_sdu_bytes += dlsch_total_bytes;
     mac->mac_stats.dl.used_prb_aggregate += sched_pdsch->rbSize;
+    l2c_add(mac->counters.dl_tx_bytes, TBS);
+    l2c_add(mac->counters.dl_tx_rbs, sched_pdsch->rbSize);
 
     /* save retransmission information */
     harq->sched_pdsch = *sched_pdsch;

@@ -21,6 +21,7 @@
 #include "common/utils/nr/nr_common.h"
 #include "common/utils/ds/byte_array.h"
 #include "common/utils/ds/spsc_q.h"
+#include "common/utils/l2_counters/l2_counters.h"
 #include "openair2/LAYER2/nr_rlc/nr_rlc_configuration.h"
 #include "openair2/LAYER2/NR_MAC_gNB/nr_pos_ue_context.h"
 
@@ -1321,6 +1322,14 @@ typedef struct nr_cell_sched_s {
   time_stats_t rx_ulsch_sdu;
 } nr_cell_sched_t;
 
+/// MAC counters exported by l2_counters; all NULL if the export is disabled
+typedef struct {
+  l2c_counter_t *dl_tx_bytes;
+  l2c_counter_t *dl_tx_rbs;
+  l2c_counter_t *ul_rx_bytes;
+  l2c_counter_t *ul_sched_rbs;
+} nr_mac_counters_t;
+
 /*! \brief top level gNB MAC structure */
 typedef struct gNB_MAC_INST_s {
   /// F1-C/U network configuration (addresses and ports)
@@ -1334,6 +1343,7 @@ typedef struct gNB_MAC_INST_s {
   /// Pointer to IF module instance for PHY
   NR_IF_Module_t                  *if_inst;
   pthread_t                       stats_thread;
+  nr_mac_counters_t               counters;
 
   /// Per-cell scheduling contexts
   nr_cell_sched_t cells[NR_MAX_CELLS];

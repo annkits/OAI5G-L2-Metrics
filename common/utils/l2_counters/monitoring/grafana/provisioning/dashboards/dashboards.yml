@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: LicenseRef-CSSL-1.0
+apiVersion: 1
+providers:
+  - name: l2_counters
+    folder: OAI
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

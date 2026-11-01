@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: LicenseRef-CSSL-1.0
+apiVersion: 1
+datasources:
+  - name: InfluxDB L2 counters
+    uid: influxdb-l2
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    isDefault: true
+    jsonData:
+      version: Flux
+      organization: oai
+      defaultBucket: l2_counters
+    secureJsonData:
+      token: $INFLUX_TOKEN

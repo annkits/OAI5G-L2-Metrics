@@ -2634,6 +2634,7 @@ void nr_ue_ul_scheduler(NR_UE_MAC_INST_t *mac, nr_uplink_indication_t *ul_info)
               pdu->tx_request_body.fapiTxPdu = ulsch_input_buffer;
               pdu->tx_request_body.pdu_length = TBS_bytes;
               number_of_pdus++;
+              l2c_add(mac->counters.ul_tx_bytes, TBS_bytes);
               T(T_NRUE_MAC_UL_PDU_WITH_DATA,
                 T_INT(mac->crnti),
                 T_INT(frame_tx),

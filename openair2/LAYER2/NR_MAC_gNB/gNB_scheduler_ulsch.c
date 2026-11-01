@@ -939,6 +939,7 @@ static void _nr_rx_sdu(gNB_MAC_INST *gNB_mac,
         T_BUFFER(sduP, sdu_lenP));
 
     UE->mac_stats.ul.total_bytes += sdu_lenP;
+    l2c_add(gNB_mac->counters.ul_rx_bytes, sdu_lenP);
     LOG_D(NR_MAC, "[gNB %d][PUSCH %d] %d.%d Received ULSCH sdu from PHY (rnti %04x) ul_cqi %d TA %d sduP %p, rssi %d\n",
           gNB_mac->Mod_id,
           harq_pid,
@@ -2464,6 +2465,7 @@ void post_process_ulsch(gNB_MAC_INST *nr_mac,
     UE->mac_stats.ulsch_total_bytes_scheduled += sched_pusch->tb_size;
     sched_ctrl->sched_ul_bytes += sched_pusch->tb_size;
     UE->mac_stats.ul.total_rbs += sched_pusch->rbSize;
+    l2c_add(nr_mac->counters.ul_sched_rbs, sched_pusch->rbSize);
 
   } else {
     UE->mac_stats.ul.total_rbs_retx += sched_pusch->rbSize;

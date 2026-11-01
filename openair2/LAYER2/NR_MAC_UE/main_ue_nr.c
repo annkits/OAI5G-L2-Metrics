@@ -113,6 +113,19 @@ NR_UE_L2_STATE_t nr_ue_get_sync_state(module_id_t mod_id)
   return mac->state;
 }
 
+static void nr_ue_mac_counters_init(NR_UE_MAC_INST_t *mac)
+{
+  l2c_registry_t *reg = l2c_init_from_config("UE");
+  if (!reg)
+    return;
+  char group[16];
+  snprintf(group, sizeof(group), "mac%d", mac->ue_id);
+  nr_ue_mac_counters_t *c = &mac->counters;
+  c->dl_rx_bytes = l2c_counter_create(reg, group, "dl_rx_bytes", L2C_COUNTER);
+  c->ul_tx_bytes = l2c_counter_create(reg, group, "ul_tx_bytes", L2C_COUNTER);
+  AssertFatal(c->dl_rx_bytes && c->ul_tx_bytes, "cannot create MAC L2 counters\n");
+}
+
 NR_UE_MAC_INST_t *nr_l2_init_ue(int instance_id, int numerology)
 {
   AssertFatal(instance_id < MAX_NUM_NR_UE_INST, "instance_id %d is out of range\n", instance_id);
@@ -123,6 +136,7 @@ NR_UE_MAC_INST_t *nr_l2_init_ue(int instance_id, int numerology)
   mac->ue_id = instance_id;
   mac->numerology = numerology;
   nr_ue_init_mac(mac);
+  nr_ue_mac_counters_init(mac);
   int ret = pthread_mutex_init(&mac->if_mutex, NULL);
   AssertFatal(ret == 0, "Mutex init failed\n");
   nr_ue_mac_default_configs(mac);

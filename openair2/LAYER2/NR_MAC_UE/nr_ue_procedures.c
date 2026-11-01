@@ -4116,6 +4116,7 @@ static void nr_ue_process_mac_pdu(NR_UE_MAC_INST_t *mac, nr_downlink_indication_
   }
 
   T(T_NRUE_MAC_DL_PDU_WITH_DATA, T_INT(mac->crnti), T_INT(frameP), T_INT(slot), T_INT(pdsch_pdu->harq_pid), T_BUFFER(pduP, pdu_len));
+  l2c_add(mac->counters.dl_rx_bytes, pdu_len);
 
   LOG_D(MAC,
         "[%d.%d]: processing PDU %d (with length %d) of %d total number of PDUs...\n",

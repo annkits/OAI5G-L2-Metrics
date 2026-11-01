@@ -90,6 +90,21 @@ void *nrmac_stats_thread(void *arg) {
   return NULL;
 }
 
+static void nr_mac_counters_init(gNB_MAC_INST *mac)
+{
+  l2c_registry_t *reg = l2c_init_from_config("gNB");
+  if (!reg)
+    return;
+  char group[16];
+  snprintf(group, sizeof(group), "mac%d", mac->Mod_id);
+  nr_mac_counters_t *c = &mac->counters;
+  c->dl_tx_bytes = l2c_counter_create(reg, group, "dl_tx_bytes", L2C_COUNTER);
+  c->dl_tx_rbs = l2c_counter_create(reg, group, "dl_tx_rbs", L2C_COUNTER);
+  c->ul_rx_bytes = l2c_counter_create(reg, group, "ul_rx_bytes", L2C_COUNTER);
+  c->ul_sched_rbs = l2c_counter_create(reg, group, "ul_sched_rbs", L2C_COUNTER);
+  AssertFatal(c->dl_tx_bytes && c->dl_tx_rbs && c->ul_rx_bytes && c->ul_sched_rbs, "cannot create MAC L2 counters\n");
+}
+
 static char *st_append(char *start, const char *end, const char *format, ...)
 {
   size_t space = end - start;
@@ -331,6 +346,7 @@ void mac_top_init_gNB(ngran_node_t node_type,
                      "MAC_STATS",
                      -1,
                      sched_get_priority_min(SCHED_OAI) + 1);
+      nr_mac_counters_init(RC.nrmac[i]);
       mac_rrc_init(RC.nrmac[i], node_type);
     }//END for (i = 0; i < RC.nb_nr_macrlc_inst; i++)
 
