@@ -91,8 +91,7 @@ Start the core network (OAI CN5G docker compose, AMF at 192.168.70.132) and the
 monitoring stack, then from `build/`:
 
 ```bash
-sudo ./nr-softmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf \
-  --gNBs.[0].min_rxtxtime 6 \
+sudo ./nr-softmodem -O ../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.zmq.conf \
   --device.name oai_zmqdevif --zmq.[0].tx_channels tcp://127.0.0.1:4556 --zmq.[0].rx_channels tcp://127.0.0.1:4557 \
   --l2_counters.enabled 1 --l2_counters.path /tmp/l2_counters/gnb.json
 
