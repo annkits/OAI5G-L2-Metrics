@@ -102,7 +102,15 @@ static void nr_mac_counters_init(gNB_MAC_INST *mac)
   c->dl_tx_rbs = l2c_counter_create(reg, group, "dl_tx_rbs", L2C_COUNTER);
   c->ul_rx_bytes = l2c_counter_create(reg, group, "ul_rx_bytes", L2C_COUNTER);
   c->ul_sched_rbs = l2c_counter_create(reg, group, "ul_sched_rbs", L2C_COUNTER);
-  AssertFatal(c->dl_tx_bytes && c->dl_tx_rbs && c->ul_rx_bytes && c->ul_sched_rbs, "cannot create MAC L2 counters\n");
+  c->dl_ack = l2c_counter_create(reg, group, "dl_ack", L2C_COUNTER);
+  c->dl_nack = l2c_counter_create(reg, group, "dl_nack", L2C_COUNTER);
+  c->dl_harq_fail = l2c_counter_create(reg, group, "dl_harq_fail", L2C_COUNTER);
+  c->ul_crc_ok = l2c_counter_create(reg, group, "ul_crc_ok", L2C_COUNTER);
+  c->ul_crc_fail = l2c_counter_create(reg, group, "ul_crc_fail", L2C_COUNTER);
+  c->ul_harq_fail = l2c_counter_create(reg, group, "ul_harq_fail", L2C_COUNTER);
+  AssertFatal(c->dl_tx_bytes && c->dl_tx_rbs && c->ul_rx_bytes && c->ul_sched_rbs && c->dl_ack && c->dl_nack && c->dl_harq_fail
+                  && c->ul_crc_ok && c->ul_crc_fail && c->ul_harq_fail,
+              "cannot create MAC L2 counters\n");
 }
 
 static char *st_append(char *start, const char *end, const char *format, ...)

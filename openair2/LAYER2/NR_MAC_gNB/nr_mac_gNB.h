@@ -1328,6 +1328,12 @@ typedef struct {
   l2c_counter_t *dl_tx_rbs;
   l2c_counter_t *ul_rx_bytes;
   l2c_counter_t *ul_sched_rbs;
+  l2c_counter_t *dl_ack;
+  l2c_counter_t *dl_nack; // incl. DTX and missed feedback
+  l2c_counter_t *dl_harq_fail; // TB dropped after max HARQ rounds
+  l2c_counter_t *ul_crc_ok;
+  l2c_counter_t *ul_crc_fail; // incl. DTX
+  l2c_counter_t *ul_harq_fail;
 } nr_mac_counters_t;
 
 /*! \brief top level gNB MAC structure */

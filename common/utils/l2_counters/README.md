@@ -51,6 +51,12 @@ MAC counters (group `mac<instance>`):
 | gNB  | `dl_tx_rbs`    | RBs of new DL TBs                         |
 | gNB  | `ul_rx_bytes`  | bytes of UL TBs received from PHY         |
 | gNB  | `ul_sched_rbs` | RBs of newly scheduled UL TBs             |
+| gNB  | `dl_ack`       | DL HARQ ACKs                              |
+| gNB  | `dl_nack`      | DL HARQ NACKs, incl. DTX/missed feedback  |
+| gNB  | `dl_harq_fail` | DL TBs dropped after max HARQ rounds      |
+| gNB  | `ul_crc_ok`    | UL TBs with CRC OK                        |
+| gNB  | `ul_crc_fail`  | UL TBs with CRC error, incl. DTX          |
+| gNB  | `ul_harq_fail` | UL TBs dropped after max HARQ rounds      |
 | UE   | `dl_rx_bytes`  | bytes of DL MAC PDUs received             |
 | UE   | `ul_tx_bytes`  | bytes of UL TBs sent to PHY               |
 
@@ -67,7 +73,8 @@ login; to edit, sign in as admin/admin.
 Telegraf reads `/tmp/l2_counters/*.json` (override with `L2C_DATA_DIR`) every
 second (`TELEGRAF_INTERVAL`) and writes measurement `l2_counters` with tags
 `node`, `group` and one field per counter into InfluxDB (bucket `l2_counters`,
-org `oai`). Throughput panels are `derivative()` of the counters; a step of the
+org `oai`). Throughput panels are `derivative()` of the counters, BLER is
+`nack / (ack + nack)` over the same rates; a step of the
 system clock (e.g. WSL time resync) shows up as a spike there.
 
 ## Run in SA over the ZMQ radio
